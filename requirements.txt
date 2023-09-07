@@ -1,0 +1,4 @@
+pyTelegramBotAPI==4.13.0
+django==4.2.5
+environs[django]==9.5.0
+phonenumbers==8.13.19
