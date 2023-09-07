@@ -13,4 +13,4 @@ class TgUser(models.Model):
         verbose_name_plural = 'клиенты'
 
     def __str__(self):
-        return f'{self.firstname} {self.lastname}, phone: {self.phone}'
+        return f'{self.firstname} {self.lastname}, телефон: {self.phone}'

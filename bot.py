@@ -11,7 +11,7 @@ from telebot.storage import StateMemoryStorage
 
 from config.settings import BOT_TOKEN
 from services.messages import welcome_message, user_info
-from services.keyboards import start_keyboard, change_user_keyboard, apply_user_keyboard
+from services.keyboards import start_keyboard, change_user_keyboard
 from services import db
 
 
@@ -58,7 +58,6 @@ def send_bye(message):
 def get_contact(message):
     chat_id = message.chat.id
     if message.contact is not None:
-        print(message.contact)
         bot.set_state(user_id=chat_id, state=UserStates.user_firstname)
         bot.add_data(
             chat_id,
@@ -94,6 +93,45 @@ def check_user_data(message):
         user = db.update_or_create_user(
             telegram_id=chat_id,
             **data
+        )
+
+    bot.send_message(
+        chat_id=chat_id,
+        text=user_info(user),
+        reply_markup=change_user_keyboard()
+    )
+    bot.delete_state(chat_id, chat_id)
+
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith('change'))
+def change_user(call):
+    chat_id = call.from_user.id
+    _, field = call.data.split('_')
+
+    bot.set_state(chat_id, 'change_user')
+
+    if field == 'firstname':
+        text = 'Введите имя:'
+    elif field == 'lastname':
+        text = 'Введите фамилию:'
+    elif field == 'phone':
+        text = 'Введите номер телефона в формате +7ХХХХХХХХХХ:'
+
+    bot.add_data(chat_id, chat_id, field=field)
+    bot.send_message(
+        chat_id=chat_id,
+        text=text
+    )
+
+
+@bot.message_handler(state='change_user')
+def apply_change_user(message):
+    chat_id = message.chat.id
+
+    with bot.retrieve_data(chat_id, chat_id) as data:
+        user = db.update_or_create_user(
+            telegram_id=chat_id,
+            **{data['field']: message.text}
         )
 
     bot.send_message(

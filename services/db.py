@@ -10,6 +10,6 @@ def get_user(telegram_id: int) -> TgUser | None:
 
 def update_or_create_user(telegram_id: int, **kwargs) -> None:
 
-    user, _ = TgUser.objects.update_or_create(**kwargs, defaults={'telegram_id': telegram_id})
+    user, _ = TgUser.objects.update_or_create(telegram_id=telegram_id, defaults=kwargs)
 
     return user
