@@ -45,7 +45,7 @@ DEBUG=True
 2. Запуск бота
 
     ```bash
-    python meetup_bot.py
+    python bot.py
     ```
 
 ## Цель проекта
